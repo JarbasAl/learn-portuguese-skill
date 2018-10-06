@@ -409,16 +409,45 @@ I wanted to show you the potential of mycroft intent system, some functionality 
 Hopefully mycroft is less confusing for you know, this example skill should teach you to
 
 - speak pre programmed answers, in our case translate hello to portuguese
-- optionally take extra parameters into account (gender matters when speaking in portuguese)
+- optionally take extra parameters into account, gender matters when speaking in portuguese
 - extract keywords with padatious and translate them to portuguese 
 - extract keywords with regex and explain their meaning in portuguese 
-- ask follow up questions (how does mycroft know portuguese)
-- pass data to follow up intents (repeat last portuguese utterance)
+- ask follow up questions, how does mycroft know portuguese
+- pass data to follow up intents, repeat last portuguese utterance
 - use mycroft helper utils, utterance_remainder, extract/pronounce number and extract/pronounce date
 - create a fallback handler and use custom utterance parsing
 - take control of the utterance processing cycle using converse method (live translate anything to portuguese)
 
-Source code is available [here]()
+Source code is available [here](), your skill folder should look like this
+
+    ├── __init__.py
+    ├── LICENSE
+    ├── locale
+    │   └── en-us
+    │       ├── date.voc
+    │       ├── dictionary.rx
+    │       ├── gender.voc
+    │       ├── google_told_me.dialog
+    │       ├── hello_in_portuguese.dialog
+    │       ├── hello_in_portuguese.intent
+    │       ├── if_female.dialog
+    │       ├── if_male.dialog
+    │       ├── inPortuguese.voc
+    │       ├── know.voc
+    │       ├── number.voc
+    │       ├── pt_pun.voc
+    │       ├── question.voc
+    │       ├── repeat.voc
+    │       ├── say.intent
+    │       ├── say.voc
+    │       ├── start_tx.dialog
+    │       ├── stop_tx.dialog
+    │       ├── ThankYou.voc
+    │       └── you say.dialog
+    ├── README.md
+    └── requirements.txt
+
+Now all we need to do is create skill tests and [submit the skill](https://rawgit.com/MycroftAI/mycroft-skills/18.08/meta_editor.html) to the marketplace!
 
 ## Only for mycroft?
 

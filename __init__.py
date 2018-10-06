@@ -6,6 +6,7 @@ from mycroft.util.parse import extract_number, extract_datetime
 
 import os
 import random
+import time
 from PyDictionary import PyDictionary
 from mtranslate import translate
 
@@ -1358,6 +1359,10 @@ class LearnPortugueseSkill(FallbackSkill):
         if not gender:
             self.speak_dialog("if_male", wait=True)
             self.speak_portuguese("obrigado")
+            # no wait_while_speaking since we use play_mp3
+            time.sleep(1)
+            self.speak_dialog("if_female", wait=True)
+            self.speak_portuguese("obrigada")
         elif gender == "male":
             self.speak_portuguese("obrigado")
         elif gender == "female":
@@ -1373,7 +1378,10 @@ class LearnPortugueseSkill(FallbackSkill):
                     .require("previous_speech"))
     def handle_repeat(self, message):
         text = message.data.get("previous_speech")
-        self.speak_portuguese(text)
+        # we have the file cached!
+        play_mp3(self.path_translated_file)
+        self.set_context("previous_speech", text)
+        self.set_context("google_tx")
 
     @intent_handler(IntentBuilder("HowDoYouKnowIntent")
                     .require("question").require("know")
