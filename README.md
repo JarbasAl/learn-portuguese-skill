@@ -87,24 +87,24 @@ We will be using this method to speak the portuguese bits
 	class LearnPortugueseSkill(MycroftSkill):
 	    path_translated_file = "/tmp/portuguese.mp3"
 
-        def say_in_portuguese(self, text):
+        def translate_to_portuguese(self, text):
             translated = translate(text, "pt")
-            self.say(translated, "pt")
+            self.speak_portuguese(translated)
 
-	    def say(self, sentence, lang):
+        def speak_portuguese(self, sentence):
             wait_while_speaking()
             get_sentence = 'wget -q -U Mozilla -O ' + self.path_translated_file + \
-                           '"https://translate.google.com/translate_tts?ie=UTF-8&tl=' + \
-                           str(lang) + '&q=' + str(sentence) + '&client=tw-ob' + '"'
+                           '"https://translate.google.com/translate_tts?ie=UTF-8&tl=pt&q=' + \
+                           str(sentence) + '&client=tw-ob' + '"'
     
             os.system(get_sentence)
-    
             play_mp3(self.path_translated_file)
 
 	    @intent_file_handler("hello_in_portuguese.intent")
 	    def handle_hello(self, message):
-            self.speak_dialog("hello_in_portuguese")
-            self.say_in_portuguese("olá")
+            # wait=True makes mycroft wait until speech is finished playing before continuing
+            self.speak_dialog("hello_in_portuguese", wait=True)
+            self.speak_portuguese("olá")
 
 notice that ``self.speak_dialog("hello_in_portuguese")`` ? That line of code is using a dialog file, msk/you should have created it at
 	
@@ -134,10 +134,7 @@ Adapt comes to the rescue here, instead of magically learning from examples you 
 	                    .require("ThankYou")
 	                    .require("inPortuguese"))
         def handle_thank_you(self, message):
-            self.speak_dialog("if_male")
-            self.say_in_portuguese("obrigado")
-            self.speak_dialog("if_female")
-            self.say_in_portuguese("obrigada")
+            self.speak_portuguese("obrigado")
 
 
 For this you need to create a file with keyword examples
@@ -165,16 +162,12 @@ Every keyword you defined for adapt can be used as a variable in the intent code
         def handle_thank_you(self, message):
             gender = message.data.get("gender")
             if not gender:
-                self.speak_dialog("if_male")
-                self.say_in_portuguese("obrigado")
-                self.speak_dialog("if_female")
-                self.say_in_portuguese("obrigada")
+                self.speak_dialog("if_male", wait=True)
+                self.speak_portuguese("obrigado")
             elif gender == "male":
-                self.speak_dialog("you_say")
-                self.say_in_portuguese("obrigado")
+                self.speak_portuguese("obrigado")
             elif gender == "female":
-                self.speak_dialog("you_say")
-                self.say_in_portuguese("obrigada")
+                self.speak_portuguese("obrigada")
                 
 This is the main use case for optional keywords, but they can also be used to increase confidence and help in disambiguation, after having the bare minimum requirements feel free to add as much optional keywords as you want
 
@@ -198,8 +191,7 @@ that's it, you can now access it just like with adapt
 	    @intent_file_handler("say.intent")
         def handle_say(self, message):
             words = message.data["words"]
-            self.speak_dialog("you_say")
-            self.say_in_portuguese(words)
+            self.speak_portuguese(words)
 	
 
 ## What about multi turn dialog?
@@ -219,42 +211,44 @@ Let's implement repeat functionality, first create repeat.voc
     say that again
     repeat
 
-Now let's change the say_in_portuguese method to set a context
+Now let's change the translate_to_portuguese method to set a context
 
-        def say_in_portuguese(self, text):
+        def translate_to_portuguese(self, text):
             translated = translate(text, "pt")
-            self.say(translated, "pt")
+            self.speak_portuguese(translated)
             self.set_context("previous_speech", translated)
 
+            
 The context made the "previous_speech" keyword available to adapt, this intent can now be triggered up to 3 questions after say_in_portuguese was last triggered
 
-    @intent_handler(IntentBuilder("RepeatIntent")
-                    .require("repeat")
-                    .require("previous_speech"))
-    def handle_repeat(self, message):
-        text = message.data.get("previous_speech")
-        self.say_in_portuguese(text)
-     
+        @intent_handler(IntentBuilder("RepeatIntent")
+                        .require("repeat")
+                        .require("previous_speech"))
+        def handle_repeat(self, message):
+            text = message.data.get("previous_speech")
+            self.say_in_portuguese(text)
+         
 
-Padatious does not yet support context, for these cases you are stuck with adapt, however you can set and remove contexts at will inside padatious intents like i just did in the say_in_portuguese method
+Padatious does not yet support context, for these cases you are stuck with adapt, however you can set and remove contexts at will inside padatious intents like i just did in the speak_portuguese method
 
 You can also use contexts that don't even have data, you just require it to ensure that something happened first
 
-        def say(self, sentence, lang):
+       
+        def speak_portuguese(self, sentence):
             wait_while_speaking()
             get_sentence = 'wget -q -U Mozilla -O ' + self.path_translated_file + \
-                           '"https://translate.google.com/translate_tts?ie=UTF-8&tl=' + \
-                           str(lang) + '&q=' + str(sentence) + '&client=tw-ob' + '"'
+                           '"https://translate.google.com/translate_tts?ie=UTF-8&tl=pt&q=' + \
+                           str(sentence) + '&client=tw-ob' + '"'
     
             os.system(get_sentence)
             play_mp3(self.path_translated_file)
             self.set_context("google_tx")
     	
-    @intent_handler(IntentBuilder("HowDoYouKnowIntent")
-                    .require("question").require("know")
-                    .require("google_tx"))
-    def handle_how_do_you_know(self, message):
-        self.speak_dialog("google_told_me")
+        @intent_handler(IntentBuilder("HowDoYouKnowIntent")
+                        .require("question").require("know")
+                        .require("google_tx"))
+        def handle_how_do_you_know(self, message):
+            self.speak_dialog("google_told_me")
 
 
 ## I am a wizard
@@ -283,7 +277,7 @@ Just require and use the regex capture group as a normal adapt keyword
             dictionary = PyDictionary()
             dictionary.meaning(word)
             meaning = dictionary.get("Noun") or dictionary.get("Verb")
-            self.say_in_portuguese(meaning)
+            self.translate_to_portuguese(meaning)
         
 Padatious is much more human readable, easier to translate, and less prone to errors, adapt's regex is also known to be somewhat buggy at times, but maybe you really are a wizard. 
 Just keep in mind adapt is rule based, corner cases creep up if you over simplify/complicate
@@ -340,9 +334,14 @@ But sometimes you just could not make an intent for your use case, maybe because
     
 A last resort thing you can do is make a fallback intent, use good old fashioned python programming with no help whatsoever to decide what to do
 
-        def initialize(self):
-            self.register_fallback(self.handle_pun_fallback, 99)
+        class LearnPortugueseSkill(FallbackSkill):
+            path_translated_file = "/tmp/portuguese.mp3"
+            intercepting = False
+            puns = [...]
             
+            def initialize(self):
+                self.register_fallback(self.handle_pun_fallback, 99)
+                
 There's usually no good reason to do this, and this example should have used a regular intent
 
 	    def handle_pun_fallback(self, utterance):
@@ -350,7 +349,7 @@ There's usually no good reason to do this, and this example should have used a r
                 pun = random.choice(self.puns)
                 question = pun["pergunta"]
                 answer = pun["resposta"]
-                self.say(question + ".\n" + answer, "pt")
+                self.speak_portuguese(question + ".\n" + answer)
                 return True
             return False
     
@@ -365,9 +364,8 @@ Let's make an intent to start the interception cycle
 
         @intent_file_handler("live_translate_portuguese.intent")
         def handle_live_translate(self, message):
-            self.speak_dialog("start_tx")
-            wait_while_speaking()
-            self.say("iniciando tradução automática", "pt")
+            self.speak_dialog("start_tx", wait=True)
+            self.speak_portuguese("iniciando tradução automática")
             self.intercepting = True
     
 Now we can use the converse method to capture the utterances
@@ -376,17 +374,17 @@ We also need to check if the user told us to stop, there is an helper method to 
             
         def stop(self):
             if self.intercepting:
-                self.say("parando tradução automática", "pt")
-                self.speak_dialog("stop_tx")
+                self.speak_dialog("stop_tx", wait=True)
+                self.speak_portuguese("parando tradução automática")
                 self.intercepting = False
                 
         def converse(self, transcript, lang="en-us"):
             utterance = transcript[0]
             if self.intercepting:
-                if self.voc_match(self, utterance, "cancel.voc", lang=lang):
+                if self.voc_match(self, utterance, "cancel", lang=lang):
                     self.stop()
                 else:
-                    self.say_in_portuguese(utterance)
+                    self.speak_portuguese(utterance)
                 return True
             return False
 

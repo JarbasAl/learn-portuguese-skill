@@ -1358,8 +1358,6 @@ class LearnPortugueseSkill(FallbackSkill):
         if not gender:
             self.speak_dialog("if_male", wait=True)
             self.speak_portuguese("obrigado")
-            self.speak_dialog("if_female", wait=True)
-            self.speak_portuguese("obrigada")
         elif gender == "male":
             self.speak_portuguese("obrigado")
         elif gender == "female":
@@ -1418,8 +1416,8 @@ class LearnPortugueseSkill(FallbackSkill):
 
     def stop(self):
         if self.intercepting:
-            self.translate_to_portuguese("parando tradução automática")
-            self.speak_dialog("stop_tx")
+            self.speak_dialog("stop_tx", wait=True)
+            self.speak_portuguese("parando tradução automática")
             self.intercepting = False
 
     def converse(self, transcript, lang="en-us"):
