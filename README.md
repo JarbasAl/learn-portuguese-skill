@@ -193,7 +193,7 @@ that's it, you can now access it just like with adapt
 	    @intent_file_handler("say.intent")
         def handle_say(self, message):
             words = message.data["words"]
-            self.speak_portuguese(words)
+            self.translate_to_portuguese(words)
 	
 
 ## What about multi turn dialog?
@@ -221,14 +221,14 @@ Now let's change the translate_to_portuguese method to set a context
             self.set_context("previous_speech", translated)
 
             
-The context made the "previous_speech" keyword available to adapt, this intent can now be triggered up to 3 questions after speak_portuguese was last triggered
+The context made the "previous_speech" keyword available to adapt, this intent can now be triggered up to 3 questions after translate_to_portuguese was last triggered
 
         @intent_handler(IntentBuilder("RepeatIntent")
                         .require("repeat")
                         .require("previous_speech"))
         def handle_repeat(self, message):
             text = message.data.get("previous_speech")
-            self.say_in_portuguese(text)
+            self.speak_portuguese(text)
          
 
 Padatious does not yet support context, for these cases you are stuck with adapt, however you can set and remove contexts at will inside padatious intents like i just did in the speak_portuguese method
@@ -307,7 +307,9 @@ We have utility packages to extract dates, english is well supported
             pronounced_date = nice_date(date)
             self.translate_to_portuguese(pronounced_date)
 
-One useful strategy that works well together with optional keywords is to use the utterance_remainder, in adapt intents you can get the text leftover that was not captured by the intent
+One useful strategy that works well together with optional keywords is to use the utterance_remainder
+
+In adapt intents you can get the text leftover that was not captured into any keyword
 
 Mycroft also provides utils to handle numbers, language support not guaranteed except for english.
 
@@ -320,7 +322,7 @@ The PR for portuguese is in, we can pronounce the number directly and save a cal
             # lets get a number from the utterance
             number = extract_number(text, lang=self.lang)
             # portuguese uses long scale, lets take that into account!
-            # in short scale 1 billion = 1e12 instead of 1e9
+            # in long scale 1 billion = 1e12 instead of 1e9
             spoken_number = pronounce_number(number, lang="pt", short_scale=False)
             self.speak_in_portuguese(spoken_number)
             
@@ -386,7 +388,7 @@ We also need to check if the user told us to stop, there is an helper method to 
                 if self.voc_match(self, utterance, "cancel", lang=lang):
                     self.stop()
                 else:
-                    self.speak_portuguese(utterance)
+                    self.translate_to_portuguese(utterance)
                 return True
             return False
 

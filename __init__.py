@@ -1397,7 +1397,7 @@ class LearnPortugueseSkill(FallbackSkill):
         # lets get a number from the utterance
         number = extract_number(text, lang=self.lang)
         # portuguese uses long scale, lets take that into account!
-        # in short scale 1 billion = 1e12 instead of 1e9
+        # in long scale 1 billion = 1e12 instead of 1e9
         spoken_number = pronounce_number(number, short_scale=False)
         self.translate_to_portuguese(spoken_number)
 
