@@ -451,29 +451,17 @@ Adapt seems a little more intimidating at first sight
 
 	engine = IntentDeterminationEngine()
 
-	weather_keyword = [
-	    "weather"
-	]
+	weather_keyword = ["weather"]
 
 	for wk in weather_keyword:
 	    engine.register_entity(wk, "WeatherKeyword")
 
-	weather_types = [
-	    "snow",
-	    "rain",
-	    "wind",
-	    "sleet",
-	    "sun"
-	]
+	weather_types = ["snow", "rain", "wind", "sleet", "sun"]
 
 	for wt in weather_types:
 	    engine.register_entity(wt, "WeatherType")
 
-	locations = [
-	    "Seattle",
-	    "San Francisco",
-	    "Tokyo"
-	]
+	locations = ["Seattle", "San Francisco", "Tokyo"]
 
 	for loc in locations:
 	    engine.register_entity(loc, "Location")
@@ -488,7 +476,7 @@ Adapt seems a little more intimidating at first sight
 
 	for intent in engine.determine_intent(' '.join(sys.argv[1:])):
 		if intent.get('confidence') > 0:
-		print(json.dumps(intent, indent=4))
+		    print(json.dumps(intent, indent=4))
 
 You can also get [Padaos](https://github.com/MatthewScholefield/padaos)  the regex intent parser, i even[ forked it](https://github.com/JarbasAl/auto_regex) it to simply output the generated regex instead of making intents
 
