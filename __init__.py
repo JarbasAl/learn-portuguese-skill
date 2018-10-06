@@ -1382,7 +1382,7 @@ class LearnPortugueseSkill(FallbackSkill):
         self.speak_dialog("google")
 
     @intent_handler(IntentBuilder("ExplainInPortugueseIntent")
-                    .require("SampleWord"))
+                    .require("SampleWord").require("inPortuguese"))
     def handle_explain(self, message):
         word = message.data["SampleWord"]
         dictionary = PyDictionary()

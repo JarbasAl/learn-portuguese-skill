@@ -273,7 +273,7 @@ Make a file named dictionary.rx
 Just require and use the regex capture group as a normal adapt keyword
 
         @intent_handler(IntentBuilder("ExplainInPortugueseIntent")
-                    .require("SampleWord"))
+                    .require("SampleWord").require("inPortuguese"))
         def handle_explain(self, message):
             word = message.data["SampleWord"]
             dictionary = PyDictionary()
