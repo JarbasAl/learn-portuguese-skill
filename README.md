@@ -74,9 +74,11 @@ Now lets look at our skill code, open the ``__ init __.py`` file
 
 Since this is a teach portuguese skill we need to implement some logic,
 
-Mycroft's TTS system will be configured for english, it can not speak portuguese text, the awesome [translate skill ](https://github.com/jcasoft/translate-skill) from jcasoft uses google TTS for this, let's use his code to add a ``say_in_portuguese(text)`` method!
+Mycroft's TTS system will be configured for english, it can not speak portuguese text, the awesome [translate skill ](https://github.com/jcasoft/translate-skill) from jcasoft uses google TTS for this
+
+let's use his code to add  ``speak_portuguese(text)`` and ``translate_to_portuguese(text)`` methods!
 	
-We will be using this method to speak the portuguese bits
+We will now be able to speak the portuguese bits
 
 
 	from mycroft.skills.core import MycroftSkill, intent_file_handler
@@ -119,7 +121,7 @@ To add support for new languages just create a new folder with it's language cod
 
 It is also much easier to translate an intent if you have full sentences, adapt is trickier and often requires the translator to check the source code, one more good reason to use padatious!
 
-NOTE mycroft recently changed this, all files are in ``skill_folder/locale/en-us`` , old way still works, but now its easier since you need to track even less folders!
+NOTE mycroft recently changed the folder structure, all files are in ``skill_folder/locale/en-us`` , old paths still work, but now its easier since you need to track even less folders!
 
 ## I like Rules
 
@@ -219,7 +221,7 @@ Now let's change the translate_to_portuguese method to set a context
             self.set_context("previous_speech", translated)
 
             
-The context made the "previous_speech" keyword available to adapt, this intent can now be triggered up to 3 questions after say_in_portuguese was last triggered
+The context made the "previous_speech" keyword available to adapt, this intent can now be triggered up to 3 questions after speak_portuguese was last triggered
 
         @intent_handler(IntentBuilder("RepeatIntent")
                         .require("repeat")
