@@ -213,12 +213,17 @@ Let's implement repeat functionality, first create repeat.voc
     say that again
     repeat
 
-Now let's change the translate_to_portuguese method to set a context
+Now let's change the speak_portuguese method to set a context
 
-        def translate_to_portuguese(self, text):
-            translated = translate(text, "pt")
-            self.speak_portuguese(translated)
-            self.set_context("previous_speech", translated)
+        def speak_portuguese(self, sentence):
+            wait_while_speaking()
+            get_sentence = 'wget -q -U Mozilla -O ' + self.path_translated_file + \
+                           '"https://translate.google.com/translate_tts?ie=UTF-8&tl=pt&q=' + \
+                           str(sentence) + '&client=tw-ob' + '"'
+        
+            os.system(get_sentence)
+            play_mp3(self.path_translated_file)
+            self.set_context("previous_speech", sentence)
 
             
 The context made the "previous_speech" keyword available to adapt, this intent can now be triggered up to 3 questions after translate_to_portuguese was last triggered
@@ -241,9 +246,10 @@ You can also use contexts that don't even have data, you just require it to ensu
             get_sentence = 'wget -q -U Mozilla -O ' + self.path_translated_file + \
                            '"https://translate.google.com/translate_tts?ie=UTF-8&tl=pt&q=' + \
                            str(sentence) + '&client=tw-ob' + '"'
-    
+        
             os.system(get_sentence)
             play_mp3(self.path_translated_file)
+            self.set_context("previous_speech", sentence)
             self.set_context("google_tx")
     	
         @intent_handler(IntentBuilder("HowDoYouKnowIntent")
@@ -339,8 +345,6 @@ But sometimes you just could not make an intent for your use case, maybe because
 A last resort thing you can do is make a fallback intent, use good old fashioned python programming with no help whatsoever to decide what to do
 
         class LearnPortugueseSkill(FallbackSkill):
-            path_translated_file = "/tmp/portuguese.mp3"
-            intercepting = False
             puns = [...]
             
             def initialize(self):

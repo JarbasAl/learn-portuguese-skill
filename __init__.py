@@ -1334,7 +1334,6 @@ class LearnPortugueseSkill(FallbackSkill):
     def translate_to_portuguese(self, text):
         translated = translate(text, "pt")
         self.speak_portuguese(translated)
-        self.set_context("previous_speech", translated)
 
     def speak_portuguese(self, sentence):
         wait_while_speaking()
@@ -1344,6 +1343,7 @@ class LearnPortugueseSkill(FallbackSkill):
 
         os.system(get_sentence)
         play_mp3(self.path_translated_file)
+        self.set_context("previous_speech", sentence)
         self.set_context("google_tx")
 
     @intent_file_handler("hello_in_portuguese.intent")
